@@ -1,11 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Setup.cs">
     <Files>
-      <File FileName="Assets\scripts\Camera.cs" Line="8" Column="44" />
-      <File FileName="Assets\scripts\Setup.cs" Line="85" Column="20" />
-      <File FileName="Assets\scripts\PlayerController.cs" Line="38" Column="42" />
-      <File FileName="Assets\scripts\RaceMaster.cs" Line="8" Column="23" />
+      <File FileName="Assets\scripts\PlayerController.cs" Line="23" Column="27" />
+      <File FileName="Assets\scripts\Setup.cs" Line="167" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

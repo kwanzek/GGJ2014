@@ -6,13 +6,7 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour {
 
 
-	// How far to translate on X axis
-	private float xVelocity = 0;
-	// How far to translate on Y axis
-	private float yVelocity = 0;
-
-	private float xAcceleration = 1.0f;
-	private float yAcceleration = 1.0f;
+	public int playerNumber = 0;
 
 	private float rotation = 90.0f;
 	private float angularVelocity = 200.0f;
@@ -20,18 +14,16 @@ public class PlayerController : MonoBehaviour {
 	private float maxSpeed = 100.0f;
 	private float acceleration = 100.0f;
 
+	float playerScalar = 100.0f;
+	float forceScalar = 1000.0f;
+
 	private bool canInput = false;
 
 	// List of tiles / blocks
-	List<GameObject> blockList;
+	List<GameObject> wallColliderList;
+	List<GameObject> otherCollidableList;
 
 	private int blockSize;
-
-	//List of keys for input
-	private KeyCode KEY_FORWARD = KeyCode.W;
-	private KeyCode KEY_BACKWARD = KeyCode.S;
-	private KeyCode KEY_LEFT = KeyCode.A;
-	private KeyCode KEY_RIGHT = KeyCode.D;
 
 	// Use this for initialization
 	void Start () {
@@ -40,7 +32,9 @@ public class PlayerController : MonoBehaviour {
 		Setup setupScript = masterController.GetComponent("Setup") as Setup;
 
 		//Grab tile list
-		blockList = setupScript.blockList;
+		wallColliderList = setupScript.wallCollidableList;
+
+		otherCollidableList = setupScript.otherCollidableList;
 
 		//Grab tile size
 		blockSize = setupScript.tileSize;
@@ -54,9 +48,27 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+
 		if(canInput)
+		{
+
+			float xAxis = Input.GetAxis ("L_XAxis_"+playerNumber);
+			float yAxis = Input.GetAxis ("L_YAxis_"+playerNumber);
+
+			speed += (acceleration * Time.deltaTime) * yAxis * -1;
+			if(Mathf.Abs(speed) > maxSpeed)
 			{
+				speed = Mathf.Sign(speed)*maxSpeed;
+			}
+
+			rotation += angularVelocity * Time.deltaTime * xAxis * -1;
+			if(rotation < 0)
+				rotation +=360;
+			else if(rotation > 360)
+				rotation -= 360;
+
+
+			/*
 			if(Input.GetKey(KEY_FORWARD))
 			{
 				speed += (acceleration * Time.deltaTime);
@@ -85,8 +97,8 @@ public class PlayerController : MonoBehaviour {
 				if(rotation < 0)
 				{
 					rotation+=360;
-			}
-		}
+				}
+			}*/
 		}
 
 
@@ -96,27 +108,32 @@ public class PlayerController : MonoBehaviour {
 		float forwardY = Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
 
 
+		//COLLISION DETECTION!
+
 		//Get bounding box
 		Bounds boundingBox = renderer.bounds;
 		Vector3 extents = boundingBox.extents;
 		Rect boundingRect = new Rect(boundingBox.center.x-extents.x, boundingBox.center.y-extents.y, 
 		                             extents.x*2, extents.y*2);
 
+		Vector2 forceVector = new Vector2(0,0);
 
-		float tempDistanceX = 0;
-		float tempDistanceY = 0;
-		float closestDistanceY = Mathf.Infinity;
-		float closestDistanceX = Mathf.Infinity;
-
-
-		foreach(GameObject obj in blockList)
+		foreach(GameObject obj in wallColliderList)
 		{
 			Bounds tileBoundingBox = obj.renderer.bounds;
 			Vector3 tileExtents = tileBoundingBox.extents;
 			
 			Rect tileBoundingRect = new Rect(tileBoundingBox.center.x-tileExtents.x, 
 			                                 tileBoundingBox.center.y-tileExtents.y, tileExtents.x*2, tileExtents.y*2);
-			
+
+			bool isIntersecting = doesIntersect(boundingRect, tileBoundingRect);
+			if(isIntersecting)
+			{
+				forceVector = applyForce(tileBoundingRect.center.x,tileBoundingRect.center.y
+				           ,boundingRect.center.x,boundingRect.center.y, forceVector);
+			}
+
+			/*
 			//Debug.Log (forwardX);
 			float tempDistanceMin_Y = getDistance(0, forwardY, 0, tileBoundingRect.yMin);
 			float tempDistanceMax_Y = getDistance(0, forwardY, 0, tileBoundingRect.yMax);
@@ -137,15 +154,22 @@ public class PlayerController : MonoBehaviour {
 			{
 				closestDistanceX = tempDistanceX;
 				//Debug.Log ("shorterX");
-			}
+			}*/
 		}
 
 
 		//forwardX = Mathf.Min(closestDistanceX, forwardX);
 		//forwardY = Mathf.Min(closestDistanceY, forwardY);
 
-		float newX = transform.position.x + forwardX; //Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*rotation) * speed;
-		float newY = transform.position.y + forwardY; //Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
+
+		//END COLLISION DETECTION
+
+
+		//float newX = transform.position.x + forwardX; //Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*rotation) * speed;
+		//float newY = transform.position.y + forwardY; //Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
+
+		float newX = transform.position.x + forceVector.x+forwardX;
+		float newY = transform.position.y + forceVector.y+forwardY;
 
 		transform.rotation = Quaternion.AngleAxis(rotation-90, Vector3.forward);
 
@@ -163,4 +187,36 @@ public class PlayerController : MonoBehaviour {
 	{
 		return Mathf.Sqrt(Mathf.Pow(x1-x2, 2) + Mathf.Pow(y1-y2, 2));
 	}
+
+	Vector2 applyForce(float x1, float y1, float playerX, float playerY, Vector2 currentForceVector)
+	{
+		float deltaX = playerX-x1;
+		float deltaY = playerY-y1;
+
+		float distance = getDistance(x1,y1, playerX, playerY);
+
+		float repulsion = forceScalar/Mathf.Pow(distance, 2);
+		Vector2 unitVector = new Vector2(deltaX, deltaY).normalized;
+
+		unitVector.Scale(new Vector2(repulsion, repulsion));
+		Vector2 forceVector = unitVector;
+		currentForceVector = new Vector2(currentForceVector.x+forceVector.x, currentForceVector.y + forceVector.y);
+
+		return currentForceVector;
+	}
+
+	bool doesIntersect(Rect player, Rect obj)
+	{
+		Vector2 playerTopLeft = new Vector2(player.center.x-player.width/2, player.center.y+player.height/2);
+		Vector2 playerBottomRight = new Vector2(player.center.x+player.width/2, player.center.y-player.height/2);
+
+		Vector2 objectTopLeft = new Vector2(obj.center.x-obj.width/2, obj.center.y+obj.height/2);
+		Vector2 objectBottomRight = new Vector2(obj.center.x+obj.width/2, obj.center.y-obj.height/2);
+
+
+
+		return (playerTopLeft.x < objectBottomRight.x && playerTopLeft.y > objectBottomRight.y) && 
+			(playerBottomRight.x > objectTopLeft.x && playerBottomRight.y < objectTopLeft.y);
+	}
+
 }

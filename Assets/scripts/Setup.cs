@@ -5,106 +5,134 @@ using System.Collections.Generic;
 public class Setup : MonoBehaviour {
 
 	//Values come from using Tiled
+
+	public enum Walls
+	{
+		UpDown = 6,
+		LeftRight = 7,
+		TopLeft = 8,
+		BottomRight = 9,
+		BottomLeft = 10,
+		TopRight = 11,
+	}
+
 	public enum Tiles {
-		Impassable = 0,
+		Empty = 0,
 		Player1 = 1,
 		Player2 = 2,
 		Player3 = 3,
-		Player4 = 4,
-		Powerup = 5,
-		Neutral = 7
+		UnusedPlayer=4,
+		Player4 = 5,
+		Checkered = 12,
+		Start = 13
 	};
 
 	//All the game object prefabs we are using
 
-	/*
-	public GameObject Impassable;
-	public GameObject Player1;
-	public GameObject Player2;
-	public GameObject Player3;
-	public GameObject Player4;
-	public GameObject Powerup;
-	public GameObject Neutral;*/
-
-	public GameObject blockObject;
+	//public GameObject blockObject;
 	public GameObject player1Block;
 	public GameObject player2Block;
 	public GameObject player3Block;
+	public GameObject unusedPlayer;
 	public GameObject player4Block;
+	public GameObject upDown;
+	public GameObject leftRight;
+	public GameObject topLeft;
+	public GameObject bottomRight;
+	public GameObject bottomLeft;
+	public GameObject topRight;
+	public GameObject checkered;
+	public GameObject start;
+	
 	public GameObject playerObject; 
 
+	[HideInInspector]
 	public GameObject player1;
 
 	//Size of tilemap
-	public int tilemapWidth = 16;
-	public int tilemapHeight = 16;
+	[HideInInspector]
+	public int tilemapWidth = 32;
+	[HideInInspector]
+	public int tilemapHeight = 32;
 
 	//Width / Height of tiles in pixels
+	[HideInInspector]
 	public int tileSize = 32;
 
-	public List<GameObject> blockList = new List<GameObject>();
+	public List<GameObject> wallCollidableList = new List<GameObject>();
+	public List<GameObject> otherCollidableList = new List<GameObject>();
+	public List<GameObject> playerList = new List<GameObject>();
 
 	private float timer;
-
-	//Tile map as integers
-	public int[,] tilemap = new int[,] 
+	
+	public int[,] tilemap = new int[,]
 	{
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,7,7,7,7,7,7,7,7,7,7,0,0,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,0,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,1,2,4,0},
-		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
-		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
-		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,0,7,7,7,7,7,7,7,7,7,7,7,7,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,9,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,10,0,0},
+		{0,0,9,8,3,3,3,0,0,0,0,0,0,0,0,0,12,0,0,0,0,0,0,0,0,0,5,5,5,11,10,0},
+		{0,9,8,3,3,3,3,0,0,0,0,0,0,0,0,0,12,13,0,0,0,0,0,0,0,0,5,5,5,5,11,10},
+		{0,6,3,3,3,0,0,0,0,0,0,0,0,0,0,0,12,0,13,0,0,0,0,0,0,0,0,0,5,5,5,6},
+		{0,6,3,3,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,13,0,0,0,0,0,0,0,0,0,5,5,6},
+		{0,6,3,3,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,0,13,0,0,0,0,0,0,0,0,5,5,6},
+		{0,6,0,0,0,0,0,0,1,1,0,0,0,0,0,0,12,0,0,0,0,0,0,0,0,4,4,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,1,9,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,10,4,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,5,11,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,3,0,0,0,0,6},
+		{0,6,0,0,0,0,0,0,5,5,0,4,0,0,0,0,0,0,0,3,0,0,0,0,0,3,3,0,0,0,0,6},
+		{0,6,4,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,1,6},
+		{0,6,4,4,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,1,6},
+		{0,6,4,4,4,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,6},
+		{0,11,10,4,4,4,4,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,1,0,0,1,1,1,1,9,8},
+		{0,0,11,10,4,4,4,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,1,0,0,1,1,1,9,8,0},
+		{0,0,0,11,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	};
+
 
 	// Use this for initialization
 	void Start () {
-		timer = 3.0f;
+
+		timer = 0.5f;
 		int yPosition = tileSize/2; //offset for tiles since position is centered
 
-		for (int i = 0; i < tilemap.GetLength(0); ++i)
+		GameObject[] objectIndices = {null, player1Block, player2Block, player3Block, unusedPlayer,
+			player4Block, upDown, leftRight, topLeft, bottomRight, bottomLeft, topRight, checkered, start};
+
+		//GameObject[] startLocations = new GameObject[4];
+
+		for (int i = tilemap.GetLength (0)-1; i >= 0; --i)
 		{
 			int xPosition = tileSize/2; //offset for tiles since position is centered
 			for (int j = 0; j < tilemap.GetLength(1); ++j)
 			{
 				int tileType = tilemap[i,j];
 				GameObject tempObj = null;
-				if(tileType != (int)Tiles.Neutral)
+				if(tileType != (int)Tiles.Empty)
 				{
-					//Debug.Log (tileType);
-					if(tileType == (int)Tiles.Impassable)
+					tempObj = (GameObject)Instantiate(objectIndices[tileType], 
+					                                  new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+
+					if(System.Enum.IsDefined(typeof(Walls), tileType))
 					{
-						tempObj = (GameObject)Instantiate(blockObject, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
-						tempObj.renderer.material.color = GetColorFromTile(tileType);
+						wallCollidableList.Add (tempObj);
 					}
-					else if (tileType == (int)Tiles.Player1)
+					else if(System.Enum.IsDefined(typeof(Tiles), tileType))
 					{
-						tempObj = (GameObject)Instantiate(player1Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+						otherCollidableList.Add(tempObj);
 					}
-					else if (tileType == (int)Tiles.Player2)
-					{
-						tempObj = (GameObject)Instantiate(player2Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
-					}
-					else if (tileType == (int)Tiles.Player3)
-					{
-						tempObj = (GameObject)Instantiate(player3Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
-					}
-					else if (tileType == (int)Tiles.Player4)
-					{
-						tempObj = (GameObject)Instantiate(player4Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
-					}
-					
-					blockList.Add (tempObj);
 				}
 				
 				xPosition+=tileSize;
@@ -113,8 +141,13 @@ public class Setup : MonoBehaviour {
 			yPosition+=tileSize;
 		}
 
-		player1 = (GameObject)Instantiate(playerObject, new Vector3(128, 128, 0), Quaternion.identity);
-		player1.renderer.material.color = Color.red;
+		//Set up the players
+
+		player1 = (GameObject)Instantiate(playerObject, new Vector3(300, 350, 0), Quaternion.identity);
+		PlayerController playerController = player1.GetComponent("PlayerController") as PlayerController;
+		playerController.playerNumber = 1;
+		playerList.Add(player1);
+
 	}
 	
 	// Update is called once per frame
@@ -129,54 +162,5 @@ public class Setup : MonoBehaviour {
 			timer = 0;
 		}
 	
-	}
-
-	//Returns the GameObject corresponding to the given tileType int
-	Color GetColorFromTile(int tileType)
-	{
-		Color blockColor = Color.clear;
-		switch(tileType)
-		{
-		case (int)Tiles.Impassable:
-		{
-			blockColor = Color.white;
-			break;
-		}
-		case (int)Tiles.Player1:
-		{
-			blockColor = Color.red;
-			break;
-			
-		}
-		case (int)Tiles.Player2:
-		{
-			blockColor = Color.blue;
-			break;
-		}
-		case (int)Tiles.Player3:
-		{
-			blockColor = Color.green;
-			break;
-		}
-		case (int)Tiles.Player4:
-		{
-			blockColor = Color.yellow;
-			break;	
-		}
-		case (int)Tiles.Powerup:
-		{
-			blockColor = Color.magenta;
-			break;
-		}
-		case (int)Tiles.Neutral:
-		{
-			blockColor = Color.grey;
-			break;
-		}
-		default:
-			blockColor = Color.white;
-			break;
-		}
-		return blockColor;
 	}
 }
