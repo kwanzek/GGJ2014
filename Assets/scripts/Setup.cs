@@ -27,7 +27,13 @@ public class Setup : MonoBehaviour {
 	public GameObject Neutral;*/
 
 	public GameObject blockObject;
+	public GameObject player1Block;
+	public GameObject player2Block;
+	public GameObject player3Block;
+	public GameObject player4Block;
 	public GameObject playerObject; 
+
+	public GameObject player1;
 
 	//Size of tilemap
 	public int tilemapWidth = 16;
@@ -38,8 +44,9 @@ public class Setup : MonoBehaviour {
 
 	public List<GameObject> blockList = new List<GameObject>();
 
+	private float timer;
+
 	//Tile map as integers
-	//Generated from Tiled
 	public int[,] tilemap = new int[,] 
 	{
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -48,10 +55,10 @@ public class Setup : MonoBehaviour {
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
-		{0,7,7,7,7,7,7,7,7,7,7,7,1,2,3,0},
-		{0,1,2,3,0,0,0,0,0,0,0,0,1,2,3,0},
-		{0,1,2,3,0,0,0,0,0,0,0,0,1,2,3,0},
-		{0,1,2,3,0,0,0,0,0,0,0,0,1,2,3,0},
+		{0,7,7,7,7,7,7,7,7,7,7,7,1,2,4,0},
+		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
+		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
+		{0,1,2,3,4,0,0,0,0,0,0,0,1,2,4,0},
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
 		{0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0},
@@ -62,7 +69,7 @@ public class Setup : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		timer = 3.0f;
 		int yPosition = tileSize/2; //offset for tiles since position is centered
 
 		for (int i = 0; i < tilemap.GetLength(0); ++i)
@@ -74,9 +81,30 @@ public class Setup : MonoBehaviour {
 				GameObject tempObj = null;
 				if(tileType != (int)Tiles.Neutral)
 				{
-					tempObj = (GameObject)Instantiate(blockObject, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+					//Debug.Log (tileType);
+					if(tileType == (int)Tiles.Impassable)
+					{
+						tempObj = (GameObject)Instantiate(blockObject, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+						tempObj.renderer.material.color = GetColorFromTile(tileType);
+					}
+					else if (tileType == (int)Tiles.Player1)
+					{
+						tempObj = (GameObject)Instantiate(player1Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+					}
+					else if (tileType == (int)Tiles.Player2)
+					{
+						tempObj = (GameObject)Instantiate(player2Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+					}
+					else if (tileType == (int)Tiles.Player3)
+					{
+						tempObj = (GameObject)Instantiate(player3Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+					}
+					else if (tileType == (int)Tiles.Player4)
+					{
+						tempObj = (GameObject)Instantiate(player4Block, new Vector3(xPosition, yPosition, -1), Quaternion.identity);
+					}
+					
 					blockList.Add (tempObj);
-					tempObj.renderer.material.color = GetColorFromTile(tileType);
 				}
 				
 				xPosition+=tileSize;
@@ -85,12 +113,21 @@ public class Setup : MonoBehaviour {
 			yPosition+=tileSize;
 		}
 
-		GameObject player1 = (GameObject)Instantiate(playerObject, new Vector3(64, 64, 0), Quaternion.identity);
+		player1 = (GameObject)Instantiate(playerObject, new Vector3(128, 128, 0), Quaternion.identity);
 		player1.renderer.material.color = Color.red;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if(timer > 0)
+			timer -= Time.deltaTime;
+		if(timer < 0)
+		{
+			PlayerController playerController = player1.GetComponent("PlayerController") as PlayerController;
+			playerController.setCanInput(true);
+			timer = 0;
+		}
 	
 	}
 
