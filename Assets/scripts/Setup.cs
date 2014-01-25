@@ -44,10 +44,21 @@ public class Setup : MonoBehaviour {
 	public GameObject checkered;
 	public GameObject start;
 	
-	public GameObject playerObject; 
+	public GameObject player1Object;
+	public GameObject player2Object;
+	public GameObject player3Object;
+	public GameObject player4Object;
 
 	[HideInInspector]
-	public GameObject player1;
+	public GameObject player1;	
+	[HideInInspector]
+	public GameObject player2;
+	[HideInInspector]
+	public GameObject player3;
+	[HideInInspector]
+	public GameObject player4;
+
+	public List<Vector2> startLocations;
 
 	//Size of tilemap
 	[HideInInspector]
@@ -108,10 +119,10 @@ public class Setup : MonoBehaviour {
 		timer = 0.5f;
 		int yPosition = tileSize/2; //offset for tiles since position is centered
 
+		startLocations = new List<Vector2>();
+
 		GameObject[] objectIndices = {null, player1Block, player2Block, player3Block, unusedPlayer,
 			player4Block, upDown, leftRight, topLeft, bottomRight, bottomLeft, topRight, checkered, start};
-
-		//GameObject[] startLocations = new GameObject[4];
 
 		for (int i = tilemap.GetLength (0)-1; i >= 0; --i)
 		{
@@ -129,9 +140,13 @@ public class Setup : MonoBehaviour {
 					{
 						wallCollidableList.Add (tempObj);
 					}
-					else if(System.Enum.IsDefined(typeof(Tiles), tileType))
+					else if(System.Enum.IsDefined(typeof(Tiles), tileType) && tileType != (int)Tiles.Start)
 					{
 						otherCollidableList.Add(tempObj);
+					}
+					else if(tileType == (int)Tiles.Start)
+					{
+						startLocations.Add(new Vector2(xPosition, yPosition));
 					}
 				}
 				
@@ -143,10 +158,59 @@ public class Setup : MonoBehaviour {
 
 		//Set up the players
 
-		player1 = (GameObject)Instantiate(playerObject, new Vector3(300, 350, 0), Quaternion.identity);
+		int randomInt = Random.Range(0, startLocations.Count);
+		Vector2 tempVector = startLocations[randomInt];
+
+		player1 = (GameObject)Instantiate(player1Object, new Vector3(tempVector.x, 
+		                                                            tempVector.y, 0), Quaternion.identity);
 		PlayerController playerController = player1.GetComponent("PlayerController") as PlayerController;
 		playerController.playerNumber = 1;
 		playerList.Add(player1);
+
+		startLocations.Remove(tempVector);
+
+
+
+		randomInt = Random.Range(0, startLocations.Count);
+		tempVector = startLocations[randomInt];
+		
+		player2 = (GameObject)Instantiate(player2Object, new Vector3(tempVector.x, 
+		                                                            tempVector.y, 0), Quaternion.identity);
+		PlayerController playerController2 = player2.GetComponent("PlayerController") as PlayerController;
+		playerController2.playerNumber = 2;
+		playerList.Add(player2);
+		
+		startLocations.Remove(tempVector);
+
+
+
+
+		randomInt = Random.Range(0, startLocations.Count);
+		tempVector = startLocations[randomInt];
+		
+		player3 = (GameObject)Instantiate(player3Object, new Vector3(tempVector.x, 
+		                                                            tempVector.y, 0), Quaternion.identity);
+		PlayerController playerController3 = player3.GetComponent("PlayerController") as PlayerController;
+		playerController3.playerNumber = 3;
+		playerList.Add(player3);
+		
+		startLocations.Remove(tempVector);
+
+
+
+
+
+
+		randomInt = Random.Range(0, startLocations.Count);
+		tempVector = startLocations[randomInt];
+		
+		player4 = (GameObject)Instantiate(player4Object, new Vector3(tempVector.x, 
+		                                                            tempVector.y, 0), Quaternion.identity);
+		PlayerController playerController4 = player4.GetComponent("PlayerController") as PlayerController;
+		playerController4.playerNumber = 4;
+		playerList.Add(player4);
+		
+		startLocations.Remove(tempVector);
 
 	}
 	
@@ -159,6 +223,17 @@ public class Setup : MonoBehaviour {
 		{
 			PlayerController playerController = player1.GetComponent("PlayerController") as PlayerController;
 			playerController.setCanInput(true);
+
+			PlayerController playerController2 = player2.GetComponent("PlayerController") as PlayerController;
+			playerController2.setCanInput(true);
+
+			PlayerController playerController3 = player3.GetComponent("PlayerController") as PlayerController;
+			playerController3.setCanInput(true);
+
+			PlayerController playerController4 = player4.GetComponent("PlayerController") as PlayerController;
+			playerController4.setCanInput(true);
+
+
 			timer = 0;
 		}
 	

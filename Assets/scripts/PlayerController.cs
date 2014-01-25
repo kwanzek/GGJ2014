@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour {
 
 	public int playerNumber = 0;
 
-	private float rotation = 90.0f;
+	private float rotation = 180.0f;
 	private float angularVelocity = 200.0f;
 	private float speed = 0.0f;
 	private float maxSpeed = 100.0f;
@@ -51,7 +51,6 @@ public class PlayerController : MonoBehaviour {
 
 		if(canInput)
 		{
-
 			float xAxis = Input.GetAxis ("L_XAxis_"+playerNumber);
 			float yAxis = Input.GetAxis ("L_YAxis_"+playerNumber);
 
