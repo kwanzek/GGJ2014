@@ -93,6 +93,17 @@ public class Setup : MonoBehaviour {
 	bool oneSecond = false;
 	bool goTime = false;
 
+	public GameObject blueBase;
+	public GameObject redBase;
+	public GameObject yellowBase;
+	public GameObject greenBase;
+
+	public GameObject blueLapsActual;
+	public GameObject redLapsActual;
+	public GameObject yellowLapsActual;
+	public GameObject greenLapsActual;
+
+
 	private float timer;
 	
 	public int[,] tilemap = new int[,]
@@ -131,6 +142,10 @@ public class Setup : MonoBehaviour {
 		{0,0,0,0,0,0,0,11,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,0,0,0,0,0,0}
 	};
 
+
+	void OnGUI()
+	{
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -198,9 +213,20 @@ public class Setup : MonoBehaviour {
 		playerController.playerNumber = 1;
 		playerList.Add(player1);
 
+		int lapStart = 740;
+		int lapFactor = 80;
+		int lapHeight = 1060;
+
+
+		blueLapsActual = (GameObject)Instantiate(blueBase, new Vector3(lapStart, 
+		                                                               lapHeight, 0), Quaternion.identity);
+
+		LapCounter blueCounter = blueLapsActual.GetComponent("LapCounter") as LapCounter;
+		blueCounter.attachedPlayer = player1;
+
 		startLocations.Remove(tempVector);
 
-
+		lapStart += lapFactor;
 
 		randomInt = Random.Range(0, startLocations.Count);
 		tempVector = startLocations[randomInt];
@@ -214,6 +240,13 @@ public class Setup : MonoBehaviour {
 		startLocations.Remove(tempVector);
 
 
+		redLapsActual = (GameObject)Instantiate(redBase, new Vector3(lapStart, 
+		                                                             lapHeight, 0), Quaternion.identity);
+
+		LapCounter redCounter = redLapsActual.GetComponent("LapCounter") as LapCounter;
+		redCounter.attachedPlayer = player2;
+
+		lapStart += lapFactor;
 
 
 		randomInt = Random.Range(0, startLocations.Count);
@@ -228,8 +261,13 @@ public class Setup : MonoBehaviour {
 		startLocations.Remove(tempVector);
 
 
+		yellowLapsActual = (GameObject)Instantiate(yellowBase, new Vector3(lapStart, 
+		                                                                   lapHeight, 0), Quaternion.identity);
 
+		LapCounter yellowCounter = yellowLapsActual.GetComponent("LapCounter") as LapCounter;
+		yellowCounter.attachedPlayer = player3;
 
+		lapStart += lapFactor;
 
 
 		randomInt = Random.Range(0, startLocations.Count);
@@ -242,6 +280,12 @@ public class Setup : MonoBehaviour {
 		playerList.Add(player4);
 
 		startLocations.Remove(tempVector);
+
+		greenLapsActual = (GameObject)Instantiate(greenBase, new Vector3(lapStart, 
+		                                                                 lapHeight, 0), Quaternion.identity);
+
+		LapCounter greenCounter = greenLapsActual.GetComponent("LapCounter") as LapCounter;
+		greenCounter.attachedPlayer = player4;
 
 		CustomCamera cameraController = GameObject.FindGameObjectWithTag("MainCamera").GetComponent("CustomCamera") as CustomCamera;
 		if(player1 != null)

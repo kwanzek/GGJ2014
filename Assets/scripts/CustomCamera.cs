@@ -29,7 +29,7 @@ public class CustomCamera : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		transform.position = new Vector3(256, 256, transform.position.z);
-
+		
 	}
 
 	void FixedUpdate()
@@ -38,31 +38,14 @@ public class CustomCamera : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		//starfield.transform.position = new Vector3(Camera.main.transform.position.x,Camera.main.transform.position.y, starfield.transform.position.z);
+		//starfield.transform.localScale = new Vector2((1280/(Camera.main.orthographicSize*2)), 1280 / (Camera.main.orthographicSize*2));
+
 		if(playerLocations != null)
 		{
 			if(playerLocations.Count > 0)
 			{
-				/*
-				float minX = Mathf.Infinity;
-				float minY = Mathf.Infinity;
-				float maxX = -1;
-				float maxY = -1;
-				
-				foreach(Transform player in playerLocations)
-				{
-					if(player.position.x < minX)
-						minX = player.position.x;
-					else if(player.position.x > maxX)
-						maxX = player.position.x;
-					if(player.position.y < minY)
-						minY = player.position.y;
-					else if (player.position.y > maxY)
-						maxY = player.position.y;
-				}
-
-				maxX += size_offset;
-				maxY += size_offset;*/
-
 				Vector2 centroid = new Vector2(0,0);
 
 				foreach(Transform player in playerLocations)
@@ -85,17 +68,13 @@ public class CustomCamera : MonoBehaviour {
 				distance_percent = (distance_percent / 2.0f) + 50.0f;
 				if(distance_percent < minCameraSize)
 					distance_percent = minCameraSize;
-				//if(distance_percent > maxCameraSize)
-				//	distance_percent = maxCameraSize;
-
-				Debug.Log ("Before: " + distance_percent);
-
+				if(distance_percent > 800)
+					distance_percent = 800;
 
 
 				float current_size = Camera.main.orthographicSize;
 
 				distance_percent = Mathf.Lerp(current_size, distance_percent, smooth_value);
-				Debug.Log ("After: " + distance_percent);
 				Camera.main.orthographicSize = distance_percent;//Mathf.Clamp(distance_percent, minCameraSize, maxCameraSize);
 
 				//Debug.Log (distance_percent);

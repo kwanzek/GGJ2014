@@ -6,7 +6,7 @@ public class RaceMaster : MonoBehaviour {
 
 	int total_laps = 2;
 
-	Vector2 referencePoint = new Vector2(540, 595);
+	Vector2 referencePoint = new Vector2(420, 495);
 
 	float[] playerReferenceAngles = {0f,0f,0f,0f};
 	float[] playerAccumulatedAngles = {0f,0f,0f,0f};
