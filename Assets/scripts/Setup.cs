@@ -18,14 +18,17 @@ public class Setup : MonoBehaviour {
 
 	public enum Tiles {
 		Empty = 0,
+		Checkered = 12,
+		Start = 13
+	};
+
+	public enum ColorTiles{
 		Player1 = 1,
 		Player2 = 2,
 		Player3 = 3,
 		UnusedPlayer=4,
 		Player4 = 5,
-		Checkered = 12,
-		Start = 13
-	};
+	}
 
 	//All the game object prefabs we are using
 
@@ -71,6 +74,7 @@ public class Setup : MonoBehaviour {
 	public int tileSize = 32;
 
 	public List<GameObject> wallCollidableList = new List<GameObject>();
+	public List<GameObject> colorTileCollidableList = new List<GameObject>();
 	public List<GameObject> otherCollidableList = new List<GameObject>();
 	public List<GameObject> playerList = new List<GameObject>();
 
@@ -140,9 +144,13 @@ public class Setup : MonoBehaviour {
 					{
 						wallCollidableList.Add (tempObj);
 					}
+					else if(System.Enum.IsDefined(typeof(ColorTiles), tileType))
+					{
+						colorTileCollidableList.Add(tempObj);
+					}
 					else if(System.Enum.IsDefined(typeof(Tiles), tileType) && tileType != (int)Tiles.Start)
 					{
-						otherCollidableList.Add(tempObj);
+						otherCollidableList.Add (tempObj);
 					}
 					else if(tileType == (int)Tiles.Start)
 					{

@@ -11,16 +11,22 @@ public class PlayerController : MonoBehaviour {
 	private float rotation = 180.0f;
 	private float angularVelocity = 200.0f;
 	private float speed = 0.0f;
-	private float maxSpeed = 100.0f;
+	private float maxSpeed = 250.0f;
 	private float acceleration = 100.0f;
 
 	float playerScalar = 100.0f;
-	float forceScalar = 1000.0f;
+	float forceScalar = 2000.0f;
+
+	float colorSpeedFactor = 1.5f;
+	float colorSlowFactor = 0.5f;
+
+	float maxSpeedDragFactor = 1000f;
 
 	private bool canInput = false;
 
 	// List of tiles / blocks
 	List<GameObject> wallColliderList;
+	List<GameObject> colorTileCollidableList;
 	List<GameObject> otherCollidableList;
 
 	private int blockSize;
@@ -33,6 +39,8 @@ public class PlayerController : MonoBehaviour {
 
 		//Grab tile list
 		wallColliderList = setupScript.wallCollidableList;
+
+		colorTileCollidableList = setupScript.colorTileCollidableList;
 
 		otherCollidableList = setupScript.otherCollidableList;
 
@@ -49,16 +57,55 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		//Get bounding box
+		Bounds boundingBox = renderer.bounds;
+		Vector3 extents = boundingBox.extents;
+		Rect boundingRect = new Rect(boundingBox.center.x-extents.x, boundingBox.center.y-extents.y, 
+		                             extents.x*2, extents.y*2);
+
+
+		float altered_Acceleration = acceleration;
+		float maxSpeed_extraFactor = 1.0f;
+
+		foreach(GameObject obj in colorTileCollidableList)
+		{
+			Bounds tileBoundingBox = obj.renderer.bounds;
+			Vector3 tileExtents = tileBoundingBox.extents;
+			
+			Rect tileBoundingRect = new Rect(tileBoundingBox.center.x-tileExtents.x, 
+			                                 tileBoundingBox.center.y-tileExtents.y, tileExtents.x*2, tileExtents.y*2);
+			
+			bool isIntersecting = doesIntersect(boundingRect, tileBoundingRect);
+
+			if(isIntersecting)
+			{
+				BlockScript blockScript = obj.GetComponent("BlockScript") as BlockScript;
+				if(blockScript.colorNumber == playerNumber)
+				{
+					maxSpeed_extraFactor = colorSpeedFactor;
+				}
+				else
+				{
+					maxSpeed_extraFactor = colorSlowFactor;
+				}
+				//Debug.Log (maxSpeed_extraFactor);
+			}
+
+		}
 		if(canInput)
 		{
 			float xAxis = Input.GetAxis ("L_XAxis_"+playerNumber);
 			float yAxis = Input.GetAxis ("L_YAxis_"+playerNumber);
 
-			speed += (acceleration * Time.deltaTime) * yAxis * -1;
-			if(Mathf.Abs(speed) > maxSpeed)
+
+			float tempFactor = 1.0f;
+			//if(maxSpeed_extraFactor == colorSpeedFactor)
+
+			if(maxSpeed_extraFactor == colorSpeedFactor)
 			{
-				speed = Mathf.Sign(speed)*maxSpeed;
+				tempFactor = 2.0f;
 			}
+			speed += ((acceleration * Time.deltaTime) * yAxis * -1*tempFactor);
 
 			rotation += angularVelocity * Time.deltaTime * xAxis * -1;
 			if(rotation < 0)
@@ -100,18 +147,16 @@ public class PlayerController : MonoBehaviour {
 			}*/
 		}
 
+		if(Mathf.Abs(speed) > maxSpeed * maxSpeed_extraFactor)
+		{
+			speed -= maxSpeedDragFactor * Time.deltaTime;
+		}
+
 		//This is where the player wants to go
 		float forwardX = Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*rotation) * speed;
 		float forwardY = Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
 
-
 		//COLLISION DETECTION!
-
-		//Get bounding box
-		Bounds boundingBox = renderer.bounds;
-		Vector3 extents = boundingBox.extents;
-		Rect boundingRect = new Rect(boundingBox.center.x-extents.x, boundingBox.center.y-extents.y, 
-		                             extents.x*2, extents.y*2);
 
 		Vector2 forceVector = new Vector2(0,0);
 
@@ -137,10 +182,6 @@ public class PlayerController : MonoBehaviour {
 
 
 		//END COLLISION DETECTION
-
-
-		//float newX = transform.position.x + forwardX; //Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*rotation) * speed;
-		//float newY = transform.position.y + forwardY; //Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
 
 		float newX = transform.position.x + forceVector.x+forwardX;
 		float newY = transform.position.y + forceVector.y+forwardY;

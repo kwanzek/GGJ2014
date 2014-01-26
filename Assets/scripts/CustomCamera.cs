@@ -12,7 +12,7 @@ public class CustomCamera : MonoBehaviour {
 	[HideInInspector]
 	public float minCameraSize = 128;
 	[HideInInspector]
-	public float maxCameraSize = 300;
+	public float maxCameraSize = 512;
 
 	[HideInInspector]
 	public float smooth_value = 0.5f;
