@@ -76,6 +76,7 @@ public class Setup : MonoBehaviour {
 	public List<GameObject> wallCollidableList = new List<GameObject>();
 	public List<GameObject> colorTileCollidableList = new List<GameObject>();
 	public List<GameObject> otherCollidableList = new List<GameObject>();
+	public List<GameObject> finishTiles = new List<GameObject>();
 	public List<GameObject> playerList = new List<GameObject>();
 
 	private float timer;
@@ -148,13 +149,18 @@ public class Setup : MonoBehaviour {
 					{
 						colorTileCollidableList.Add(tempObj);
 					}
-					else if(System.Enum.IsDefined(typeof(Tiles), tileType) && tileType != (int)Tiles.Start)
+					else if(System.Enum.IsDefined(typeof(Tiles), tileType) && tileType != (int)Tiles.Start 
+					        && tileType != (int)Tiles.Checkered)
 					{
 						otherCollidableList.Add (tempObj);
 					}
 					else if(tileType == (int)Tiles.Start)
 					{
 						startLocations.Add(new Vector2(xPosition, yPosition));
+					}
+					else if(tileType == (int)Tiles.Checkered)
+					{
+						finishTiles.Add(tempObj);
 					}
 				}
 				
@@ -163,6 +169,8 @@ public class Setup : MonoBehaviour {
 			}
 			yPosition+=tileSize;
 		}
+
+		Debug.Log (finishTiles.Count);
 
 		//Set up the players
 
@@ -231,6 +239,13 @@ public class Setup : MonoBehaviour {
 			cameraController.player4 = player4.transform;
 		cameraController.updateArray();
 
+
+		RaceMaster raceScript = GetComponent<RaceMaster>();
+		raceScript.player1 = player1;
+		raceScript.player2 = player2;
+		raceScript.player3 = player3;
+		raceScript.player4 = player4;
+		raceScript.setInitialAngles();
 
 	}
 	

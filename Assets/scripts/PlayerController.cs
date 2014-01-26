@@ -22,14 +22,19 @@ public class PlayerController : MonoBehaviour {
 
 	float maxSpeedDragFactor = 1000f;
 
+	public bool canFinishLap = false;
+	//
 	private bool canInput = false;
 
 	// List of tiles / blocks
 	List<GameObject> wallColliderList;
 	List<GameObject> colorTileCollidableList;
 	List<GameObject> otherCollidableList;
+	List<GameObject> finishTiles;
 
 	private int blockSize;
+
+	public int lapsCompleted = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -43,6 +48,8 @@ public class PlayerController : MonoBehaviour {
 		colorTileCollidableList = setupScript.colorTileCollidableList;
 
 		otherCollidableList = setupScript.otherCollidableList;
+
+		finishTiles = setupScript.finishTiles;
 
 		//Grab tile size
 		blockSize = setupScript.tileSize;
@@ -67,6 +74,27 @@ public class PlayerController : MonoBehaviour {
 		float altered_Acceleration = acceleration;
 		float maxSpeed_extraFactor = 1.0f;
 
+		foreach(GameObject obj in finishTiles)
+		{
+			Bounds tileBoundingBox = obj.renderer.bounds;
+			Vector3 tileExtents = tileBoundingBox.extents;
+			
+			Rect tileBoundingRect = new Rect(tileBoundingBox.center.x-tileExtents.x, 
+			                                 tileBoundingBox.center.y-tileExtents.y, tileExtents.x*2, tileExtents.y*2);
+
+			bool isIntersecting = doesIntersect(boundingRect, tileBoundingRect);
+			
+			if(isIntersecting && canFinishLap)
+			{
+				canFinishLap = false;
+				lapsCompleted++;
+
+				Debug.Log (lapsCompleted);
+				break;
+			}
+
+		}
+
 		foreach(GameObject obj in colorTileCollidableList)
 		{
 			Bounds tileBoundingBox = obj.renderer.bounds;
@@ -79,6 +107,7 @@ public class PlayerController : MonoBehaviour {
 
 			if(isIntersecting)
 			{
+				//Debug.Log (playerNumber);
 				BlockScript blockScript = obj.GetComponent("BlockScript") as BlockScript;
 				if(blockScript.colorNumber == playerNumber)
 				{
@@ -150,6 +179,8 @@ public class PlayerController : MonoBehaviour {
 		if(Mathf.Abs(speed) > maxSpeed * maxSpeed_extraFactor)
 		{
 			speed -= maxSpeedDragFactor * Time.deltaTime;
+			if(speed < maxSpeed * -1 / 2)
+				speed = maxSpeed*-1 / 2;
 		}
 
 		//This is where the player wants to go
