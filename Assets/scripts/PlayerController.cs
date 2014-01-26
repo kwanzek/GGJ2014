@@ -86,8 +86,6 @@ public class PlayerController : MonoBehaviour {
 			{
 				canFinishLap = false;
 				lapsCompleted++;
-
-				Debug.Log (lapsCompleted);
 				break;
 			}
 
@@ -122,7 +120,33 @@ public class PlayerController : MonoBehaviour {
 		if(canInput)
 		{
 			float xAxis = Input.GetAxis ("L_XAxis_"+playerNumber);
-			float yAxis = Input.GetAxis ("L_YAxis_"+playerNumber);
+			bool goForward = Input.GetButton ("A_"+playerNumber);
+			bool goBackward = Input.GetButton("B_"+playerNumber);
+
+
+			bool alternateXAxisPlus = false;
+			bool alternateXAxisMinus = false;
+
+			if(playerNumber == 1 || playerNumber == 2)
+			{
+				alternateXAxisPlus = Input.GetButton ("AlternateXPlus_"+playerNumber);
+				alternateXAxisMinus = Input.GetButton("AlternateXMinus_"+playerNumber);
+			}
+
+			if(xAxis == 0)
+			{
+				if(alternateXAxisPlus != false)
+					xAxis = 1;
+				else if (alternateXAxisMinus != false)
+					xAxis = -1;
+			}
+
+			float actualMovement = 0;
+
+			if(goForward)
+				actualMovement = -1.0f;
+			else if (goBackward)
+				actualMovement = 1.0f;
 
 
 			float tempFactor = 1.0f;
@@ -132,7 +156,7 @@ public class PlayerController : MonoBehaviour {
 			{
 				tempFactor = 2.0f;
 			}
-			speed += ((acceleration * Time.deltaTime) * yAxis * -1*tempFactor);
+			speed += ((acceleration * Time.deltaTime) * actualMovement * -1*tempFactor);
 
 			rotation += angularVelocity * Time.deltaTime * xAxis * -1;
 			if(rotation < 0)
@@ -239,7 +263,7 @@ public class PlayerController : MonoBehaviour {
 
 		float distance = getDistance(x1,y1, playerX, playerY);
 
-		float repulsion = forceScalar/Mathf.Pow(distance, 2);
+		float repulsion = forceScalar*(speed/100.0f)/Mathf.Pow(distance, 2);
 		Vector2 unitVector = new Vector2(deltaX, deltaY).normalized;
 
 		unitVector.Scale(new Vector2(repulsion, repulsion));

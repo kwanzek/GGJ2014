@@ -48,9 +48,11 @@
   <ItemGroup>
      <Compile Include="Assets\scripts\BlockScript.cs" />
      <Compile Include="Assets\scripts\CustomCamera.cs" />
+     <Compile Include="Assets\scripts\MenuController.cs" />
      <Compile Include="Assets\scripts\PlayerController.cs" />
      <Compile Include="Assets\scripts\RaceMaster.cs" />
      <Compile Include="Assets\scripts\Setup.cs" />
+     <Compile Include="Assets\scripts\SplashScript.cs" />
      <None Include="Assets\maps\MapLoop.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
