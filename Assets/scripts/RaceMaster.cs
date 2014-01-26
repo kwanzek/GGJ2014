@@ -16,6 +16,14 @@ public class RaceMaster : MonoBehaviour {
 	public GameObject player3;
 	public GameObject player4;
 
+
+	public AudioClip redWins;
+	public AudioClip blueWins;
+	public AudioClip greenWins;
+	public AudioClip yellowWins;
+
+	private bool isWinner = false;
+
 	public List<GameObject> players;
 	// Use this for initialization
 	void Start () {
@@ -54,9 +62,30 @@ public class RaceMaster : MonoBehaviour {
 					playerController.canFinishLap = true;
 					playerAccumulatedAngles[i] = 0;
 				}
-				if(playerController.lapsCompleted == total_laps)
+				if(playerController.lapsCompleted == total_laps && !isWinner)
 				{
-					Debug.Log ("Player " +i + " Wins!!!");
+					isWinner = true;
+					if(playerController.playerNumber == 1)
+					{
+						AudioSource.PlayClipAtPoint(blueWins, Camera.main.transform.position);
+						isWinner = true;
+					}
+					else if(playerController.playerNumber == 2)
+					{
+						AudioSource.PlayClipAtPoint(greenWins, Camera.main.transform.position);
+						isWinner = true;
+					}
+					else if(playerController.playerNumber == 3)
+					{
+						AudioSource.PlayClipAtPoint(yellowWins, Camera.main.transform.position);
+						isWinner = true;
+					}
+					else if(playerController.playerNumber == 4)
+					{
+						AudioSource.PlayClipAtPoint(redWins, Camera.main.transform.position);
+						isWinner = true;
+					}
+
 				}
 			}
 		}

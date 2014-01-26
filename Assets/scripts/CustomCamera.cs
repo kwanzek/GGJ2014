@@ -12,7 +12,7 @@ public class CustomCamera : MonoBehaviour {
 	[HideInInspector]
 	public float minCameraSize = 128;
 	[HideInInspector]
-	public float maxCameraSize = 512;
+	public float maxCameraSize = 100000;
 
 	[HideInInspector]
 	public float smooth_value = 0.5f;
@@ -82,16 +82,20 @@ public class CustomCamera : MonoBehaviour {
 				}
 
 				float distance_percent = (maxDistance / 720.0f) * 1280.0f;
-
+				distance_percent = (distance_percent / 2.0f) + 50.0f;
 				if(distance_percent < minCameraSize)
 					distance_percent = minCameraSize;
-				if(distance_percent > maxCameraSize)
-					distance_percent = maxCameraSize;
+				//if(distance_percent > maxCameraSize)
+				//	distance_percent = maxCameraSize;
+
+				Debug.Log ("Before: " + distance_percent);
+
+
 
 				float current_size = Camera.main.orthographicSize;
 
 				distance_percent = Mathf.Lerp(current_size, distance_percent, smooth_value);
-
+				Debug.Log ("After: " + distance_percent);
 				Camera.main.orthographicSize = distance_percent;//Mathf.Clamp(distance_percent, minCameraSize, maxCameraSize);
 
 				//Debug.Log (distance_percent);

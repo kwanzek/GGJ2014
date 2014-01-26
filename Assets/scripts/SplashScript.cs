@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 public class SplashScript : MonoBehaviour {
 
-	float splashTimer = 6.0f;
+	float splashTimer = 2.0f;
 
 	public float alpha = 1.0f;
 
@@ -16,12 +16,16 @@ public class SplashScript : MonoBehaviour {
 	public Sprite sprite6;
 	public Sprite sprite7;
 
+	public AudioClip splashMusic;
+
 	List<Sprite> sprites;
 
 	int index = 0;
 	float curFrames = 0;
 	int framesPerSecond = 12;
 	float timeDisplay;
+
+	bool decrementSplashTimer = false;
 
 	// Use this for initialization
 	void Start () {
@@ -35,6 +39,8 @@ public class SplashScript : MonoBehaviour {
 		sprites.Add (sprite5);
 		sprites.Add (sprite6);
 		sprites.Add (sprite7);
+
+		AudioSource.PlayClipAtPoint(splashMusic, Camera.main.transform.position);
 	}
 	
 	// Update is called once per frame
@@ -50,10 +56,11 @@ public class SplashScript : MonoBehaviour {
 			spriteRenderer.sprite = sprites[index];
 			
 		}
-
-		splashTimer-=Time.deltaTime;
-		if(splashTimer >= 0.0f && splashTimer <= 2.0f)
+		if(Input.anyKey)
+			decrementSplashTimer = true;
+		if(decrementSplashTimer)
 		{
+			splashTimer-=Time.deltaTime;
 			alpha -= (Time.deltaTime/2.0f);
 			SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
 			Color color = spriteRenderer.color;

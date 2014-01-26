@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour {
 				if(blockScript.colorNumber == playerNumber)
 				{
 					maxSpeed_extraFactor = colorSpeedFactor;
+					break;
 				}
 				else
 				{
