@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 public class RaceMaster : MonoBehaviour {
 
-	int total_laps = 2;
+	int total_laps = 5;
 
 	Vector2 referencePoint = new Vector2(420, 495);
 
@@ -21,8 +21,10 @@ public class RaceMaster : MonoBehaviour {
 	public AudioClip blueWins;
 	public AudioClip greenWins;
 	public AudioClip yellowWins;
+	public AudioClip finalLap;
 
 	private bool isWinner = false;
+	private bool isFinalLap = false;
 
 	public List<GameObject> players;
 	// Use this for initialization
@@ -46,6 +48,13 @@ public class RaceMaster : MonoBehaviour {
 
 				float deltaAngle = currentAngle - playerReferenceAngles[i];
 
+				int curLaps = playerController.lapsCompleted;
+				if(curLaps+1 == total_laps && isFinalLap == false)
+				{
+					isFinalLap = true;
+					AudioSource.PlayClipAtPoint(finalLap, Camera.main.transform.position);
+				}
+
 
 				playerReferenceAngles[i] = currentAngle;
 
@@ -67,25 +76,27 @@ public class RaceMaster : MonoBehaviour {
 					isWinner = true;
 					if(playerController.playerNumber == 1)
 					{
-						AudioSource.PlayClipAtPoint(blueWins, Camera.main.transform.position);
+						AudioSource.PlayClipAtPoint(blueWins, Camera.main.transform.position, 1.0f);
 						isWinner = true;
 					}
 					else if(playerController.playerNumber == 2)
 					{
-						AudioSource.PlayClipAtPoint(greenWins, Camera.main.transform.position);
+						AudioSource.PlayClipAtPoint(greenWins, Camera.main.transform.position, 1.0f);
 						isWinner = true;
 					}
 					else if(playerController.playerNumber == 3)
 					{
-						AudioSource.PlayClipAtPoint(yellowWins, Camera.main.transform.position);
+						AudioSource.PlayClipAtPoint(yellowWins, Camera.main.transform.position, 1.0f);
 						isWinner = true;
 					}
 					else if(playerController.playerNumber == 4)
 					{
-						AudioSource.PlayClipAtPoint(redWins, Camera.main.transform.position);
+						AudioSource.PlayClipAtPoint(redWins, Camera.main.transform.position, 1.0f);
 						isWinner = true;
 					}
-
+					GameObject masterController = GameObject.FindGameObjectWithTag("MasterObject");
+					Setup setupScript = masterController.GetComponent("Setup") as Setup;
+					setupScript.gameOver();
 				}
 			}
 		}

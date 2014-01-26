@@ -150,9 +150,6 @@ public class Setup : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		startMusic.Play();
-		startMusic.loop = false;
-
 		timer = 3.2f;
 		int yPosition = tileSize/2; //offset for tiles since position is centered
 
@@ -218,11 +215,11 @@ public class Setup : MonoBehaviour {
 		int lapHeight = 1060;
 
 
-		blueLapsActual = (GameObject)Instantiate(blueBase, new Vector3(lapStart, 
+		/*blueLapsActual = (GameObject)Instantiate(blueBase, new Vector3(lapStart, 
 		                                                               lapHeight, 0), Quaternion.identity);
 
 		LapCounter blueCounter = blueLapsActual.GetComponent("LapCounter") as LapCounter;
-		blueCounter.attachedPlayer = player1;
+		blueCounter.attachedPlayer = player1;*/
 
 		startLocations.Remove(tempVector);
 
@@ -240,11 +237,11 @@ public class Setup : MonoBehaviour {
 		startLocations.Remove(tempVector);
 
 
-		redLapsActual = (GameObject)Instantiate(redBase, new Vector3(lapStart, 
+		/*redLapsActual = (GameObject)Instantiate(redBase, new Vector3(lapStart, 
 		                                                             lapHeight, 0), Quaternion.identity);
 
 		LapCounter redCounter = redLapsActual.GetComponent("LapCounter") as LapCounter;
-		redCounter.attachedPlayer = player2;
+		redCounter.attachedPlayer = player2;*/
 
 		lapStart += lapFactor;
 
@@ -261,11 +258,11 @@ public class Setup : MonoBehaviour {
 		startLocations.Remove(tempVector);
 
 
-		yellowLapsActual = (GameObject)Instantiate(yellowBase, new Vector3(lapStart, 
+		/*yellowLapsActual = (GameObject)Instantiate(yellowBase, new Vector3(lapStart, 
 		                                                                   lapHeight, 0), Quaternion.identity);
 
 		LapCounter yellowCounter = yellowLapsActual.GetComponent("LapCounter") as LapCounter;
-		yellowCounter.attachedPlayer = player3;
+		yellowCounter.attachedPlayer = player3;*/
 
 		lapStart += lapFactor;
 
@@ -281,11 +278,11 @@ public class Setup : MonoBehaviour {
 
 		startLocations.Remove(tempVector);
 
-		greenLapsActual = (GameObject)Instantiate(greenBase, new Vector3(lapStart, 
+		/*greenLapsActual = (GameObject)Instantiate(greenBase, new Vector3(lapStart, 
 		                                                                 lapHeight, 0), Quaternion.identity);
 
 		LapCounter greenCounter = greenLapsActual.GetComponent("LapCounter") as LapCounter;
-		greenCounter.attachedPlayer = player4;
+		greenCounter.attachedPlayer = player4;*/
 
 		CustomCamera cameraController = GameObject.FindGameObjectWithTag("MainCamera").GetComponent("CustomCamera") as CustomCamera;
 		if(player1 != null)
@@ -336,6 +333,8 @@ public class Setup : MonoBehaviour {
 		{
 			goTime = true;
 			AudioSource.PlayClipAtPoint(announcerGo, Camera.main.transform.position);
+			startMusic.Play();
+			startMusic.loop = false;
 		}
 
 
@@ -356,11 +355,16 @@ public class Setup : MonoBehaviour {
 
 			timer = 0;
 		}
-		if(!startMusic.isPlaying && !loopMusic.isPlaying)
+		if(!startMusic.isPlaying && !loopMusic.isPlaying && timer <= 0.0f)
 		{
 			loopMusic.Play();
 			loopMusic.loop = true;
 		}
 	
+	}
+
+	public void gameOver()
+	{
+		audio.volume = 0.13f;
 	}
 }

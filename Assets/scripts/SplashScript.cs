@@ -56,6 +56,12 @@ public class SplashScript : MonoBehaviour {
 			spriteRenderer.sprite = sprites[index];
 			
 		}
+
+		if(Input.GetKey(KeyCode.C))
+		{
+			Application.LoadLevel(2);
+		}
+
 		if(Input.anyKey)
 			decrementSplashTimer = true;
 		if(decrementSplashTimer)

@@ -23,10 +23,15 @@ public class PlayerController : MonoBehaviour {
 	float maxSpeedDragFactor = 1000f;
 
 	public bool canFinishLap = false;
-	//
+
 	private bool canInput = false;
 
 	Vector2 bumpVector = new Vector2(0.0f,0.0f);
+
+
+	public AudioClip carCrash;
+	float crashDifference = 0.0f;
+
 
 	// List of tiles / blocks
 	List<GameObject> wallColliderList;
@@ -38,6 +43,9 @@ public class PlayerController : MonoBehaviour {
 	//private int blockSize;
 
 	public int lapsCompleted = 0;
+
+	public Texture boxTexture;
+	public GUIText lapText;
 
 	// Use this for initialization
 	void Start () {
@@ -56,9 +64,40 @@ public class PlayerController : MonoBehaviour {
 
 		playerList = setupScript.playerList;
 
+
 		//Grab tile size
 		//blockSize = setupScript.tileSize;
 
+	}
+
+	void OnGUI()
+	{
+		Rect whereTo = new Rect(0,0,1,1);
+		
+		string toGUI = "";
+
+		if(playerNumber == 1)
+		{
+			whereTo = new Rect(10, 10, 150, 32);
+			toGUI += "Blue on lap: ";
+		}
+		else if(playerNumber ==2)
+		{
+			whereTo = new Rect(Screen.width-150, 10, 150,32);
+			toGUI += "Green on lap: ";
+		}
+		else if(playerNumber == 3)
+		{
+			whereTo = new Rect(10, Screen.height-32, 150, 32);
+			toGUI += "Yellow on lap: ";
+		}
+		else if(playerNumber == 4)
+		{
+			whereTo = new Rect(Screen.width-150, Screen.height-32, 150, 32);
+			toGUI += "Red on lap: ";
+		}
+
+		GUI.Label(whereTo, (toGUI + " " + (lapsCompleted+1)+"/5").ToString());
 	}
 
 	void FixedUpdate()
@@ -74,6 +113,8 @@ public class PlayerController : MonoBehaviour {
 		Vector3 extents = boundingBox.extents;
 		Rect boundingRect = new Rect(boundingBox.center.x-extents.x, boundingBox.center.y-extents.y, 
 		                             extents.x*2, extents.y*2);
+
+		//lapText.text = (lapsCompleted+1).ToString();
 
 		float maxSpeed_extraFactor = 1.0f;
 
@@ -243,19 +284,25 @@ public class PlayerController : MonoBehaviour {
 				Bounds tileBoundingBox = obj.renderer.bounds;
 				Vector3 tileExtents = tileBoundingBox.extents;
 				
-				Rect tileBoundingRect = new Rect(tileBoundingBox.center.x-tileExtents.x+1, 
-				                                 tileBoundingBox.center.y-tileExtents.y+1, tileExtents.x*2-2, tileExtents.y*2-2);
+				Rect tileBoundingRect = new Rect(tileBoundingBox.center.x-tileExtents.x+2, 
+				                                 tileBoundingBox.center.y-tileExtents.y+2, tileExtents.x*2-4, tileExtents.y*2-4);
 				
 				bool isIntersecting = doesIntersect(boundingRect, tileBoundingRect);
 				if(isIntersecting)
 				{
 					bumpVector = applyForcePlayer(tileBoundingRect.center.x,tileBoundingRect.center.y
 					                         ,boundingRect.center.x,boundingRect.center.y, bumpVector);
+					if(crashDifference <= 0.0f)
+					{
+						crashDifference = 0.25f;
+						AudioSource.PlayClipAtPoint(carCrash, obj.transform.position, 0.37f);
+					}
 				}
 
 
 			}
 		}
+		crashDifference -= Time.deltaTime;
 
 
 		//forwardX = Mathf.Min(closestDistanceX, forwardX);
