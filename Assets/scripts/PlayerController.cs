@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour {
 	List<GameObject> otherCollidableList;
 	List<GameObject> finishTiles;
 
-	private int blockSize;
+	//private int blockSize;
 
 	public int lapsCompleted = 0;
 
@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour {
 		finishTiles = setupScript.finishTiles;
 
 		//Grab tile size
-		blockSize = setupScript.tileSize;
+		//blockSize = setupScript.tileSize;
 
 	}
 
@@ -70,8 +70,6 @@ public class PlayerController : MonoBehaviour {
 		Rect boundingRect = new Rect(boundingBox.center.x-extents.x, boundingBox.center.y-extents.y, 
 		                             extents.x*2, extents.y*2);
 
-
-		float altered_Acceleration = acceleration;
 		float maxSpeed_extraFactor = 1.0f;
 
 		foreach(GameObject obj in finishTiles)

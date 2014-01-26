@@ -170,8 +170,6 @@ public class Setup : MonoBehaviour {
 			yPosition+=tileSize;
 		}
 
-		Debug.Log (finishTiles.Count);
-
 		//Set up the players
 
 		int randomInt = Random.Range(0, startLocations.Count);
