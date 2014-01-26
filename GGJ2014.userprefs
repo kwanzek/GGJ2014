@@ -2,8 +2,9 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\PlayerController.cs">
     <Files>
-      <File FileName="Assets\scripts\Setup.cs" Line="234" Column="21" />
-      <File FileName="Assets\scripts\PlayerController.cs" Line="53" Column="4" />
+      <File FileName="Assets\scripts\CustomCamera.cs" Line="16" Column="2" />
+      <File FileName="Assets\scripts\Setup.cs" Line="24" Column="18" />
+      <File FileName="Assets\scripts\PlayerController.cs" Line="131" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

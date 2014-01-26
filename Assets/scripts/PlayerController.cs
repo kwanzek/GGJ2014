@@ -100,8 +100,6 @@ public class PlayerController : MonoBehaviour {
 			}*/
 		}
 
-
-
 		//This is where the player wants to go
 		float forwardX = Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*rotation) * speed;
 		float forwardY = Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*rotation) * speed;
@@ -131,29 +129,6 @@ public class PlayerController : MonoBehaviour {
 				forceVector = applyForce(tileBoundingRect.center.x,tileBoundingRect.center.y
 				           ,boundingRect.center.x,boundingRect.center.y, forceVector);
 			}
-
-			/*
-			//Debug.Log (forwardX);
-			float tempDistanceMin_Y = getDistance(0, forwardY, 0, tileBoundingRect.yMin);
-			float tempDistanceMax_Y = getDistance(0, forwardY, 0, tileBoundingRect.yMax);
-			tempDistanceY = Mathf.Min(tempDistanceMin_Y, tempDistanceMax_Y);
-
-			float tempDistanceMin_X = getDistance(forwardX, 0, tileBoundingRect.xMin, 0);
-			float tempDistanceMax_X = getDistance(forwardX, 0, tileBoundingRect.xMax, 0);
-			tempDistanceX = Mathf.Min(tempDistanceMin_X, tempDistanceMax_X);
-
-			if(tempDistanceY < closestDistanceY)
-			{
-				closestDistanceY = tempDistanceY;
-				//Debug.Log ("Temp Distance X: " + tempDistanceX + "Temp Distance Y: " + tempDistanceY);
-				//closestTile = obj;
-				//NEED TO GET THE TILE HERE?
-			}
-			if(tempDistanceX < closestDistanceX)
-			{
-				closestDistanceX = tempDistanceX;
-				//Debug.Log ("shorterX");
-			}*/
 		}
 
 
